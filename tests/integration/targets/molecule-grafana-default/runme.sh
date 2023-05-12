@@ -11,7 +11,6 @@ set -eux
 #else
 #	source <(curl -L -s $src)
 #fi
-#
 
 # Copyright 2022 Gardar Arnarsson
 # https://github.com/gardar/ansible-test-molecule
@@ -82,11 +81,15 @@ install_ansible_requirements() {
 	if [ "$(printf '%s\n' "2.12" "$ansible_version" | sort -V | head -n1)" = "2.12" ]; then
 		python -m pip install molecule molecule-plugins[docker]
 		ansible-galaxy collection install git+https://github.com/ansible-collections/community.docker.git
-		[ -f "$collection_root/requirements.yml" ] && ansible-galaxy collection install -r "$collection_root/requirements.yml"
+		if [ -f "$collection_root/requirements.yml" ]; then
+			ansible-galaxy collection install -r "$collection_root/requirements.yml"
+		fi
 	elif [ "$(printf '%s\n' "2.10" "$ansible_version" | sort -V | head -n1)" = "2.10" ]; then
 		python -m pip install molecule molecule-docker
 		ansible-galaxy collection install git+https://github.com/ansible-collections/community.docker.git
-		[ -f "$collection_root/requirements.yml" ] && ansible-galaxy collection install -r "$collection_root/requirements.yml"
+		if [ -f "$collection_root/requirements.yml" ]; then
+			ansible-galaxy collection install -r "$collection_root/requirements.yml"
+		fi
 	else
 		python -m pip install molecule molecule-docker
 		if [ -f "$collection_root/requirements.yml" ]; then
