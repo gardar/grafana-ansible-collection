@@ -2,7 +2,7 @@
 
 set -eux
 
-version="0.1.1"
+version="0.1.2"
 src="https://github.com/gardar/ansible-test-molecule/releases/download/$version/ansible-test-molecule.sh"
 
 if [[ -v GITHUB_TOKEN ]]
