@@ -5,7 +5,7 @@ src="https://github.com/gardar/ansible-test-molecule/releases/download/$version/
 
 if [[ -v GITHUB_TOKEN ]]
 then
-	source <(curl -s -H "Authorization: token $GITHUB_TOKEN" $src)
+	source <(curl -L -s -H "Authorization: token $GITHUB_TOKEN" $src)
 else
-	source <(curl -s $src)
+	source <(curl -L -s $src)
 fi
