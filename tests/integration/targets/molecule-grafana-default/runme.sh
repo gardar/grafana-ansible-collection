@@ -117,7 +117,7 @@ run_molecule() {
 
 	# Run molecule test
 	cd "$role_root" || exit
-	molecule -c "$yamllint_config_file" test -s "$scenario"
+	molecule -c "$molecule_file" test -s "$scenario"
 }
 
 main() {
