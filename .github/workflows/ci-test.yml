@@ -4,8 +4,8 @@ name: CI Tests
 # yamllint disable-line rule:truthy
 on:
   push:
-    branches:
-      - "main"
+  #    branches:
+  #      - "main"
   pull_request:
   schedule:
     - cron: '0 6 * * *'
