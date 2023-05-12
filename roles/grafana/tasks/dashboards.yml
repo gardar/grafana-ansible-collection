@@ -15,7 +15,7 @@
         url: "https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download"
         headers:
           Accept-Encoding: "gzip, deflate"
-        dest: "{{ __tmp_dashboards }}/{{ item.dashboard_id }}.json"
+        dest: "{{ __tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         mode: "0644"
       register: __download_dashboards
       until: "__download_dashboards is succeeded"
