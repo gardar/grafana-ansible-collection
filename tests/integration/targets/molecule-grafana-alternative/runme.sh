@@ -54,7 +54,7 @@ check_version() {
 	# Check if a new version exists
 	if [[ "$latest_version" != "$current_version" ]]
 	then
-		echo "A new version of 'ansible-test-molecule' is available: $latest_version"
+		echo "A new version of 'ansible-test-molecule' is available: $latest_version" >&2
 	fi
 }
 
@@ -81,15 +81,11 @@ install_ansible_requirements() {
 	if [ "$(printf '%s\n' "2.12" "$ansible_version" | sort -V | head -n1)" = "2.12" ]; then
 		python -m pip install molecule molecule-plugins[docker]
 		ansible-galaxy collection install git+https://github.com/ansible-collections/community.docker.git
-		if [ -f "$collection_root/requirements.yml" ]; then
-			ansible-galaxy collection install -r "$collection_root/requirements.yml"
-		fi
+		[ -f "$collection_root/requirements.yml" ] && ansible-galaxy collection install -r "$collection_root/requirements.yml"
 	elif [ "$(printf '%s\n' "2.10" "$ansible_version" | sort -V | head -n1)" = "2.10" ]; then
 		python -m pip install molecule molecule-docker
 		ansible-galaxy collection install git+https://github.com/ansible-collections/community.docker.git
-		if [ -f "$collection_root/requirements.yml" ]; then
-			ansible-galaxy collection install -r "$collection_root/requirements.yml"
-		fi
+		[ -f "$collection_root/requirements.yml" ] && ansible-galaxy collection install -r "$collection_root/requirements.yml"
 	else
 		python -m pip install molecule molecule-docker
 		if [ -f "$collection_root/requirements.yml" ]; then
