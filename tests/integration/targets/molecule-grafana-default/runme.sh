@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eux
+set -x
 
 #version="0.1.2"
 #src="https://github.com/gardar/ansible-test-molecule/releases/download/$version/ansible-test-molecule.sh"
