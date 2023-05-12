@@ -108,7 +108,5 @@ jobs:
         needs.discover-ansible-tests.outputs.molecule-tests != ''
     with:
       targets: ${{ needs.discover-ansible-tests.outputs.molecule-tests }}
-      ansible-core-versions:
-        - stable-2.12
-        - stable-2.13
-        - stable-2.14
+      ansible-core-versions: |
+        ["stable-2.12", "stable-2.13", "stable-2.14"]
