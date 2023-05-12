@@ -62,7 +62,7 @@ check_version() {
 install_package_requirements() {
 	if [[ -v "pkg[${ansible_os_family,,}]" ]]; then
 		packages=${pkg[${ansible_os_family,,}]}
-		ansible localhost -m packages -a "name=$packages update_cache=true"
+		ansible localhost -m package -a "name=$packages update_cache=true"
 	fi
 }
 
