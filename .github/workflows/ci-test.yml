@@ -112,6 +112,12 @@ jobs:
             done
           done
 
+      - name: debug
+        run: |
+          ls
+          ls tests/integration/targets
+          tree
+
       - name: Discover role tests
         id: set-tests
         run: |
