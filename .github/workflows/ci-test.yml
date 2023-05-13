@@ -99,6 +99,7 @@ jobs:
 
       - name: Setup molecule tests
         run: |
+          set -x
           for dir in $(find roles -type d -name 'molecule'); do
             role=$(basename $(dirname $dir))
             for test in $(ls $dir); do
