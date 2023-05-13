@@ -88,6 +88,8 @@ jobs:
 
   discover-ansible-tests:
     runs-on: ubuntu-latest
+    env:
+      RUNME_VERSION: 0.1.3
     outputs:
       molecule-tests: ${{ steps.set-tests.outputs.ansible-test-molecule }}
     steps:
@@ -104,21 +106,11 @@ jobs:
               echo "Creating directory: ${new_dir}"
               mkdir -p $new_dir
 
-              cat <<-EOF > ${new_dir}/runme.sh
-                  #!/usr/bin/env bash
-                  version="0.1.3"
-                  src="https://github.com/gardar/ansible-test-molecule/releases/download/\$version/ansible-test-molecule.sh"
-                  if [[ -v GITHUB_TOKEN ]]
-                  then
-                      source <(curl -L -s -H "Authorization: token \$GITHUB_TOKEN" \$src)
-                  else
-                      source <(curl -L -s \$src)
-                  fi
-              EOF
+              curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh > ${new_dir}/runme.sh
               chmod +x ${new_dir}/runme.sh
             done
           done
-
 
       - name: Discover role tests
         id: set-tests
