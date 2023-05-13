@@ -47,6 +47,7 @@ jobs:
       - name: "Perform ${{ matrix.targets.test }} integration test with ansible-test"
         uses: ansible-community/ansible-test-gh-action@release/v1
         with:
+          collection-src-directory: .
           ansible-core-version: ${{ matrix.ansible-core-versions }}
           target-python-version: ${{ matrix.target-python-versions }}
           controller-python-version: auto
