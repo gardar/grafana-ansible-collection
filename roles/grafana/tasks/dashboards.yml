@@ -3,6 +3,7 @@
   become: false
   delegate_to: localhost
   run_once: true
+  changed_when: false
   when: "grafana_dashboards | length > 0"
   block:
     - name: "Create local grafana dashboard directory"
@@ -60,7 +61,6 @@
         dest: "{{ __tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
         replace: '"{{ item.datasource }}"'
-      changed_when: false
       loop: "{{ grafana_dashboards }}"
 
 - name: "Import grafana dashboards via api"
