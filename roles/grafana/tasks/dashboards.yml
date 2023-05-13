@@ -14,9 +14,6 @@
     - name: "Download grafana dashboard from grafana.net to local directory"
       ansible.builtin.get_url:
         url: "https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download"
-        headers:
-          Accept-Encoding: "gzip, deflate"
-        decompress: false
         dest: "{{ __tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         mode: "0644"
       register: __download_dashboards
