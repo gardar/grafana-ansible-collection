@@ -100,15 +100,14 @@ jobs:
       - name: Setup molecule tests
         run: |
           set -x
+          curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
           for dir in $(find roles -type d -name 'molecule'); do
             role=$(basename $(dirname $dir))
             for test in $(ls $dir); do
               new_dir="tests/integration/targets/molecule-${role}-${test}"
               echo "Creating directory: ${new_dir}"
               mkdir -p $new_dir
-
-              curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh > ${new_dir}/runme.sh
+              cp ansible-test-molecule.sh ${new_dir}/runme.sh
               chmod +x ${new_dir}/runme.sh
             done
           done
