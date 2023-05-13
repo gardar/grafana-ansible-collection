@@ -55,6 +55,8 @@ jobs:
           testing-type: integration
           target: ${{ matrix.targets.test }}
           pre-test-cmd: |
+            ls
+            pwd
             set -x
             curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
             for dir in $(find roles -type d -name 'molecule'); do
