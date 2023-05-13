@@ -112,6 +112,12 @@ jobs:
             done
           done
 
+      - name: Archive tests
+        uses: actions/upload-artifact@v3
+        with:
+          name: ansible-test-molecule
+          path: tests/integration/targets/molecule-*
+
       - name: debug
         run: |
           ls

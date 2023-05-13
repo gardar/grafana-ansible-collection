@@ -27,11 +27,23 @@ jobs:
 
     name: "${{ matrix.targets.name }}-${{ matrix.ansible-core-versions }}"
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download
+        uses: actions/download-artifact@v3
+        with:
+          name: ansible-test-molecule
+          path: tests/integration/targets/
+
       - name: debug
         run: |
           ls
           pwd
           tree
+          chmod +x tests/integration/targets/molecule-*/runme.sh
+
       - name: "Perform ${{ matrix.targets.test }} integration test with ansible-test"
         uses: ansible-community/ansible-test-gh-action@release/v1
         with:
