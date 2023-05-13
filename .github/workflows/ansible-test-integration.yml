@@ -70,3 +70,4 @@ jobs:
           # coverage: never  # https://github.com/ansible-community/ansible-test-gh-action/pull/50
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          RUNME_VERSION: 0.1.3
