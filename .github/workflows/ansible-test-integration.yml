@@ -31,11 +31,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download
-        uses: actions/download-artifact@v3
-        with:
-          name: ansible-test-molecule
-          path: tests/integration/targets/
+            # - name: Download
+            #   uses: actions/download-artifact@v3
+            #   with:
+            #     name: ansible-test-molecule
+            #     path: tests/integration/targets/
 
       - name: debug
         run: |
