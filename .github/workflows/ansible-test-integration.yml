@@ -47,28 +47,28 @@ jobs:
       - name: "Perform ${{ matrix.targets.test }} integration test with ansible-test"
         uses: ansible-community/ansible-test-gh-action@release/v1
         with:
-          # collection-src-directory: .
+          collection-src-directory: .
           ansible-core-version: ${{ matrix.ansible-core-versions }}
           target-python-version: ${{ matrix.target-python-versions }}
           controller-python-version: auto
           docker-image: "--docker-privileged"  # Workaround because ansible-test action doesn't support setting privileged flag
           testing-type: integration
           target: ${{ matrix.targets.test }}
-          pre-test-cmd: |
-            set -x
-            ls
-            pwd
-            curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
-            for dir in $(find roles -type d -name 'molecule'); do
-              role=$(basename $(dirname $dir))
-              for test in $(ls $dir); do
-                new_dir="tests/integration/targets/molecule-${role}-${test}"
-                echo "Creating directory: ${new_dir}"
-                mkdir -p $new_dir
-                cp ansible-test-molecule.sh ${new_dir}/runme.sh
-                chmod +x ${new_dir}/runme.sh
-              done
-            done
+            #pre-test-cmd: |
+            #  set -x
+            #  ls
+            #  pwd
+            #  curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
+            #  for dir in $(find roles -type d -name 'molecule'); do
+            #    role=$(basename $(dirname $dir))
+            #    for test in $(ls $dir); do
+            #      new_dir="tests/integration/targets/molecule-${role}-${test}"
+            #      echo "Creating directory: ${new_dir}"
+            #      mkdir -p $new_dir
+            #      cp ansible-test-molecule.sh ${new_dir}/runme.sh
+            #      chmod +x ${new_dir}/runme.sh
+            #    done
+            #  done
           # coverage: never  # https://github.com/ansible-community/ansible-test-gh-action/pull/50
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
