@@ -44,69 +44,68 @@ jobs:
         run: ansible-test sanity -v --docker --color --coverage
         working-directory: ./ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}
 
-          #  integration:
-          #    runs-on: ubuntu-20.04
-          #    name: Integration (Ⓐ${{ matrix.ansible }}-py${{ matrix.python }})
-          #    strategy:
-          #      fail-fast: true
-          #      max-parallel: 1
-          #      matrix:
-          #        ansible:
-          #          - stable-2.13
-          #        python:
-          #          - '3.10'
-          #
-          #    steps:
-          #      - name: Check out code
-          #        uses: actions/checkout@v2
-          #        with:
-          #          path: ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}
-          #
-          #      - name: create integration_config
-          #        working-directory: ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}/tests/integration
-          #        run: |
-          #          cat <<EOF > integration_config.yml
-          #          stack_name: ${{ secrets.ANSIBLE_TEST_STACK_NAME }}
-          #          org_name: ${{ secrets.ANSIBLE_TEST_ORG_NAME }}
-          #          grafana_cloud_api_key: ${{ secrets.ANSIBLE_TEST_CLOUD_API_KEY }}
-          #          grafana_api_key: ${{ secrets.ANSIBLE_TEST_GRAFANA_API_KEY }}
-          #          test_stack_name: ${{ secrets.ANSIBLE_TEST_CI_STACK }}
-          #          EOF
-          #
-          #      - name: Set up Python
-          #        uses: actions/setup-python@v2
-          #        with:
-          #          python-version: ${{ matrix.python }}
-          #
-          #      - name: Install ansible-base (${{ matrix.ansible }})
-          #        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible }}.tar.gz --disable-pip-version-check
-          #
-          #      - name: Run integration test
-          #        run: ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python }} --coverage --docker
-          #        working-directory: ./ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}
+  integration:
+    runs-on: ubuntu-20.04
+    name: Integration (Ⓐ${{ matrix.ansible }}-py${{ matrix.python }})
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        ansible:
+          - stable-2.13
+        python:
+          - '3.10'
 
-
-  discover-ansible-tests:
-    runs-on: ubuntu-latest
-    outputs:
-      molecule-tests: ${{ steps.set-tests.outputs.ansible-test-molecule }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          path: ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}
 
-      - name: Discover role tests
-        id: set-tests
+      - name: create integration_config
+        working-directory: ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}/tests/integration
         run: |
-          echo ansible-test-molecule="[`for x in $(find tests/integration/targets -maxdepth 1 -mindepth 1 -type d -iname "molecule-*" -printf "%f\n"); do echo '{"test":\"'"${x}"'\","name":\"'"${x#*-}\"'"}'; done | tr '\n' ',' | sed '$s/,$//'`]" >> $GITHUB_OUTPUT
+          cat <<EOF > integration_config.yml
+          stack_name: ${{ secrets.ANSIBLE_TEST_STACK_NAME }}
+          org_name: ${{ secrets.ANSIBLE_TEST_ORG_NAME }}
+          grafana_cloud_api_key: ${{ secrets.ANSIBLE_TEST_CLOUD_API_KEY }}
+          grafana_api_key: ${{ secrets.ANSIBLE_TEST_GRAFANA_API_KEY }}
+          test_stack_name: ${{ secrets.ANSIBLE_TEST_CI_STACK }}
+          EOF
 
-  ansible-test-molecule:
-    uses: ./.github/workflows/ansible-test-integration.yml
-    needs:
-      - discover-ansible-tests
-    if: needs.discover-ansible-tests.outputs.molecule-tests != '[]' &&
-        needs.discover-ansible-tests.outputs.molecule-tests != ''
-    with:
-      targets: ${{ needs.discover-ansible-tests.outputs.molecule-tests }}
-      ansible-core-versions: |
-        ["stable-2.12", "stable-2.13", "stable-2.14"]
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install ansible-base (${{ matrix.ansible }})
+        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+
+      - name: Run integration test
+        run: ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python }} --coverage --docker
+        working-directory: ./ansible_collections/${{env.NAMESPACE}}/${{env.COLLECTION_NAME}}
+
+          # discover-ansible-tests:
+          #   runs-on: ubuntu-latest
+          #   outputs:
+          #     molecule-tests: ${{ steps.set-tests.outputs.ansible-test-molecule }}
+          #   steps:
+          #     - uses: actions/checkout@v3
+          #       with:
+          #         fetch-depth: 0
+
+          #     - name: Discover role tests
+          #       id: set-tests
+          #       run: |
+          #         echo ansible-test-molecule="[`for x in $(find tests/integration/targets -maxdepth 1 -mindepth 1 -type d -iname "molecule-*" -printf "%f\n"); do echo '{"test":\"'"${x}"'\","name":\"'"${x#*-}\"'"}'; done | tr '\n' ',' | sed '$s/,$//'`]" >> $GITHUB_OUTPUT
+
+          # ansible-test-molecule:
+          #   uses: ./.github/workflows/ansible-test-integration.yml
+          #   needs:
+          #     - discover-ansible-tests
+          #   if: needs.discover-ansible-tests.outputs.molecule-tests != '[]' &&
+          #       needs.discover-ansible-tests.outputs.molecule-tests != ''
+          #   with:
+          #     targets: ${{ needs.discover-ansible-tests.outputs.molecule-tests }}
+          #     ansible-core-versions: |
+          #       ["stable-2.12", "stable-2.13", "stable-2.14"]
