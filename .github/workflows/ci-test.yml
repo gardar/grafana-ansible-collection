@@ -98,7 +98,8 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch ansible-test-molecule
-        run: curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
+        run: |
+          curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
 
       - name: Cache ansible-test-molecule
         uses: actions/upload-artifact@v3
