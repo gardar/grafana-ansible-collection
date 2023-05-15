@@ -97,37 +97,60 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup molecule tests
-        run: |
-          set -x
-          curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
-          for dir in $(find roles -type d -name 'molecule'); do
-            role=$(basename $(dirname $dir))
-            for test in $(ls $dir); do
-              new_dir="tests/integration/targets/molecule-${role}-${test}"
-              echo "Creating directory: ${new_dir}"
-              mkdir -p $new_dir
-              cp ansible-test-molecule.sh ${new_dir}/runme.sh
-              chmod +x ${new_dir}/runme.sh
-            done
-          done
+      - name: Fetch ansible-test-molecule
+        run: curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
 
-      - name: Archive tests
+      - name: Cache ansible-test-molecule
         uses: actions/upload-artifact@v3
         with:
           name: ansible-test-molecule
-          path: tests/integration/targets/molecule-*
-
-            #      - name: debug
-            #        run: |
-            #          ls
-            #          ls tests/integration/targets
-            #          tree
+          path: ansible-test-molecule.sh
 
       - name: Discover role tests
         id: set-tests
         run: |
-          echo ansible-test-molecule="[`for x in $(find tests/integration/targets -maxdepth 1 -mindepth 1 -type d -iname "molecule-*" -printf "%f\n"); do echo '{"test":\"'"${x}"'\","name":\"'"${x#*-}\"'"}'; done | tr '\n' ',' | sed '$s/,$//'`]" >> $GITHUB_OUTPUT
+          echo "ansible-test-molecule=$(find roles -type d -name 'molecule' -exec sh -c '
+            for dir do
+                role=$(basename "$(dirname "$dir")")
+                for test in "$dir"/*; do
+                  test=$(basename "$test")
+                  printf "{\"test\":\"molecule-%s-%s\",\"name\":\"%s-%s\"}," "$role" "$test" "$role" "$test"
+                done
+            done' sh {} + | sed 's/,$//' | tr '\n' ',' | sed 's/^/[/;s/$/]/')" >> $GITHUB_OUTPUT
+
+
+
+            #      - name: Setup molecule tests
+            #        run: |
+            #          set -x
+            #          curl -L -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://github.com/gardar/ansible-test-molecule/releases/download/${RUNME_VERSION}/ansible-test-molecule.sh -o ansible-test-molecule.sh
+            #          for dir in $(find roles -type d -name 'molecule'); do
+            #            role=$(basename $(dirname $dir))
+            #            for test in $(ls $dir); do
+            #              new_dir="tests/integration/targets/molecule-${role}-${test}"
+            #              echo "Creating directory: ${new_dir}"
+            #              mkdir -p $new_dir
+            #              cp ansible-test-molecule.sh ${new_dir}/runme.sh
+            #              chmod +x ${new_dir}/runme.sh
+            #            done
+            #          done
+            #
+            #      - name: Archive tests
+            #        uses: actions/upload-artifact@v3
+            #        with:
+            #          name: ansible-test-molecule
+            #          path: tests/integration/targets/molecule-*
+            #
+            #            #      - name: debug
+            #            #        run: |
+            #            #          ls
+            #            #          ls tests/integration/targets
+            #            #          tree
+            #
+            #      - name: Discover role tests
+            #        id: set-tests
+            #        run: |
+            #          echo ansible-test-molecule="[`for x in $(find tests/integration/targets -maxdepth 1 -mindepth 1 -type d -iname "molecule-*" -printf "%f\n"); do echo '{"test":\"'"${x}"'\","name":\"'"${x#*-}\"'"}'; done | tr '\n' ',' | sed '$s/,$//'`]" >> $GITHUB_OUTPUT
 
   ansible-test-molecule:
     uses: ./.github/workflows/ansible-test-integration.yml

@@ -36,14 +36,15 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ansible-test-molecule
-          path: .tmp-collection/tests/integration/targets/
+          path: .tmp-collection/tests/integration/targets/${{ matrix.targets.test }}/runme.sh
 
       - name: debug
         run: |
           ls .tmp-collection
           pwd
           tree
-          chmod +x .tmp-collection/tests/integration/targets/molecule-*/runme.sh
+          #          chmod +x .tmp-collection/tests/integration/targets/molecule-*/runme.sh
+          chmod +x .tmp-collection/tests/integration/targets/${{ matrix.targets.test }}/runme.sh
 
       - name: "Perform ${{ matrix.targets.test }} integration test with ansible-test"
         uses: ansible-community/ansible-test-gh-action@release/v1
@@ -74,10 +75,3 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           RUNME_VERSION: 0.1.3
-
-      - name: debug
-        if: always()
-        run: |
-          set -x
-          ls /home/runner/work/_temp/*.sh
-          cat /home/runner/work/_temp/*.sh
