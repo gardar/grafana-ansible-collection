@@ -42,7 +42,7 @@ jobs:
         run: |
           ls .tmp-collection
           pwd
-          tree
+          tree .tmp-collection
           #          chmod +x .tmp-collection/tests/integration/targets/molecule-*/runme.sh
           chmod +x .tmp-collection/tests/integration/targets/${{ matrix.targets.test }}/runme.sh
 
