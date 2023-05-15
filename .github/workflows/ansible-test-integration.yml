@@ -36,7 +36,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ansible-test-molecule
-          path: .tmp-collection/tests/integration/targets/${{ matrix.targets.test }}/runme.sh
+          path: .tmp-collection/tests/integration/targets/${{ matrix.targets.test }}
 
       - name: debug
         run: |
